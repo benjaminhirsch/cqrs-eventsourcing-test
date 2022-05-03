@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Handler\Query;
 
 use App\Domain\AggregateRepository;
-use App\Domain\Aggregator\Account;
+use App\Domain\Aggregate\Account;
 
 final class GetSumAccounts
 {

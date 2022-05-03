@@ -2,7 +2,7 @@
 
 namespace App\Domain\Command;
 
-use App\Domain\Aggregator\AggregateRoot;
+use App\Domain\Aggregate\AggregateRoot;
 
 interface Handler
 {

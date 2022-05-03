@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Infrastructure\Handler\Command;
 
 use App\Domain\AggregateRepository;
-use App\Domain\Aggregator\Account;
-use App\Domain\Aggregator\AggregateRoot;
+use App\Domain\Aggregate\Account;
+use App\Domain\Aggregate\AggregateRoot;
 use App\Domain\Command\Command;
 use App\Domain\Command\Handler;
 use App\Domain\EventBus;

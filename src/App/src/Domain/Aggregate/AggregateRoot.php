@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Aggregator;
+namespace App\Domain\Aggregate;
 
 interface AggregateRoot
 {

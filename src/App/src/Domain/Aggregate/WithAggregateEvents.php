@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Aggregator;
+namespace App\Domain\Aggregate;
 
 use App\Domain\Event\Event;
 use App\Domain\EventBus;

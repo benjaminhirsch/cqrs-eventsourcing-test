@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
-use App\Domain\Aggregator\AggregateRoot;
+use App\Domain\Aggregate\AggregateRoot;
 
 interface AggregateRepository
 {
