@@ -5,13 +5,27 @@ declare(strict_types=1);
 namespace App\Domain\Aggregate;
 
 use App\Domain\Event\Event;
-use App\Domain\EventBus;
 
 trait WithAggregateEvents
 {
-    private function recordThat(Event $event, EventBus $eventBus): self
+    private array $recordedEvents = [];
+    
+    protected function recordThat(Event $event): void
     {
-        $eventBus->dispatch($event);
-        return $this;
+        $this->recordedEvents[] = $event;
+        $this->apply($event);
     }
+
+    /**
+     * @return Event[]
+     */
+    public function getRecordedEvents(): array
+    {
+        $recordedEvents = $this->recordedEvents;
+        $this->recordedEvents = [];
+
+        return $recordedEvents;
+    }
+
+    abstract protected function apply(Event $event): void;
 }

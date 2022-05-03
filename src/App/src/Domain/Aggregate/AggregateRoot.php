@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Aggregate;
 
-interface AggregateRoot
+abstract class AggregateRoot
 {
+    use WithAggregateEvents;
 
+    protected function __construct()
+    {
+    }
 }

@@ -4,35 +4,40 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Response\Handler;
 
-use App\Domain\AggregateRepository;
+use App\Domain\Aggregate\Building;
+use App\Domain\Command\ChangeBuildingName;
 use App\Domain\Command\CreateAccount;
+use App\Domain\Command\CreateBuilding;
 use App\Domain\CommandBus;
 use App\Domain\Query\GetSumAccounts;
-use App\Domain\QueryBus;
 use Laminas\Diactoros\Response\TextResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 final class Home implements RequestHandlerInterface
 {
-    public function __construct(private readonly CommandBus $commandBus, private readonly QueryBus $queryBus)
+    public function __construct(private readonly CommandBus $commandBus)
     {
+        $response = $this->commandBus->dispatch(CreateBuilding::fromArray([
+            'name' => 'Foobar Club'
+        ]));
 
-        // Write
-        $account = new CreateAccount(random_int(100000, 900000), 'Benjamin');
-        $this->commandBus->dispatch($account);
+        $result = $response->last(HandledStamp::class)->getResult();
+        assert($result instanceof Building);
 
-        $account = new CreateAccount(random_int(100000, 900000), 'Max');
-        $this->commandBus->dispatch($account);
+        $this->commandBus->dispatch(ChangeBuildingName::fromArray([
+            'id' => $result->id(),
+            'name' => 'OMG It\s working hotel'
+        ]));
 
-        $account = new CreateAccount(random_int(100000, 900000), 'Frieder');
-        $this->commandBus->dispatch($account);
+        $result = $response->last(HandledStamp::class)->getResult();
+        assert($result instanceof Building);
 
-        // Read
-        var_dump($this->queryBus->dispatch(new GetSumAccounts())->getMessage());
+        var_dump($result);
+
         die;
-
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

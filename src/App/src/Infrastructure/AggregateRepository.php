@@ -14,9 +14,9 @@ final class AggregateRepository implements \App\Domain\AggregateRepository
      * instead we could simply create an aggregate specific repo and query the
      * data with the current state?
      */
-    public function findBy(string $aggregateClassName, array $identifiers): array
+    public function findBy(string $aggregateClassName, array $identifiers): AggregateRoot
     {
-        return $this->aggregates[$aggregateClassName] ?? [];
+        return array_filter($this->aggregates[$aggregateClassName] ?? [], static fn(AggregateRoot $aggregateRoot) => in_array($aggregateRoot->id(), $identifiers))[0];
     }
 
     public function addAggregateRoot(AggregateRoot $aggregateRoot): void

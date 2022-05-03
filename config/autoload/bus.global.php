@@ -2,22 +2,23 @@
 
 declare(strict_types=1);
 
-use App\Domain\Command\CreateAccount;
+use App\Domain\Command\ChangeBuildingName;
+use App\Domain\Command\CreateBuilding;
 use App\Domain\CommandBus;
-use App\Domain\Event\AccountWasCreated;
+use App\Domain\Event\BuildingCreated;
+use App\Domain\Event\BuildingNameChanged;
 use App\Domain\EventBus;
-use App\Domain\Query\GetSumAccounts;
 use App\Domain\QueryBus;
 use App\Infrastructure\Handler;
 
 return [
     CommandBus::class => [
-        CreateAccount::class => [Handler\Command\CreateAccount::class],
+        CreateBuilding::class => [Handler\Command\CreateBuilding::class],
+        ChangeBuildingName::class => [Handler\Command\ChangeBuildingName::class],
     ],
-    QueryBus::class => [
-        GetSumAccounts::class => [Handler\Query\GetSumAccounts::class]
-    ],
+    QueryBus::class => [],
     EventBus::class => [
-        AccountWasCreated::class => [Handler\Event\AccountWasCreated::class]
+        BuildingCreated::class => [Handler\Event\BuildingCreated::class],
+        BuildingNameChanged::class => [Handler\Event\BuildNameChanged::class],
     ],
 ];

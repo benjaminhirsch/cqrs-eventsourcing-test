@@ -6,7 +6,7 @@ namespace App\Infrastructure\Handler\Event;
 
 use App\Domain\Event\Event;
 
-final class AccountWasCreated
+final class BuildingCreated
 {
     public function __invoke(Event $event) :void
     {
