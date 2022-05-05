@@ -5,22 +5,50 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Domain\Aggregate\AggregateRoot;
+use App\Domain\Aggregate\Building;
+use PDO;
+use PDOException;
+use Ramsey\Uuid\Uuid;
 
 final class AggregateRepository implements \App\Domain\AggregateRepository
 {
-    private array $aggregates = [];
-
-    /** Maybe this is not necessary, when all views / states are calculated at DB level
-     * instead we could simply create an aggregate specific repo and query the
-     * data with the current state?
-     */
-    public function findBy(string $aggregateClassName, array $identifiers): AggregateRoot
+    public function __construct(private PDO $connection)
     {
-        return array_filter($this->aggregates[$aggregateClassName] ?? [], static fn(AggregateRoot $aggregateRoot) => in_array($aggregateRoot->id(), $identifiers))[0];
+    }
+
+    public function findBy(string $aggregateRootId): AggregateRoot
+    {
+        try {
+            $aggregateRootId = Uuid::fromString($aggregateRootId);
+
+            $statement = $this->connection->prepare('SELECT uuid, type, body FROM events WHERE uuid = ?');
+            $statement->execute([
+                $aggregateRootId
+            ]);
+
+            return Building::reconstituteFromEvents($aggregateRootId, array_map(static fn(array $event) => \App\Domain\Event\BuildingCreated::occur(json_decode($event['body'], true)), $statement->fetchAll(PDO::FETCH_ASSOC)));
+        } catch ( PDOException $exception ) {
+            echo $exception->getMessage();
+        }
+
     }
 
     public function addAggregateRoot(AggregateRoot $aggregateRoot): void
     {
-        $this->aggregates[get_class($aggregateRoot)][] = $aggregateRoot;
+        try {
+            $this->connection->beginTransaction();
+            foreach ($aggregateRoot->getRecordedEvents() as $event) {
+                $statement = $this->connection->prepare('INSERT INTO events (type, uuid, body) VALUES (?, ?, ?)');
+                $statement->execute([
+                    $event::eventTypeName(),
+                    $aggregateRoot->id,
+                    json_encode($event->payload)
+                ]);
+            }
+            $this->connection->commit();
+        } catch ( PDOException $exception ) {
+            $this->connection->rollBack();
+            echo $exception->getMessage();
+        }
     }
 }

@@ -10,4 +10,9 @@ final class BuildingCreated extends Event
     {
         return $this->payload['name'];
     }
+
+    public static function eventTypeName(): string
+    {
+        return 'building.created';
+    }
 }

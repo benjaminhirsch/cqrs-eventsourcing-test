@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domain\Aggregate;
 
+use Ramsey\Uuid\UuidInterface;
+
 abstract class AggregateRoot
 {
     use WithAggregateEvents;
 
-    protected function __construct()
+    public function __construct(public readonly UuidInterface $id)
     {
     }
 }

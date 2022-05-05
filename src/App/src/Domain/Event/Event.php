@@ -4,21 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domain\Event;
 
-use Ramsey\Uuid\UuidInterface;
-
 abstract class Event
 {
-    protected function __construct(private readonly UuidInterface $id, protected readonly array $payload)
+    protected function __construct(public readonly array $payload)
     {
     }
 
-    public function id(): UuidInterface
-    {
-        return $this->id;
-    }
+    abstract public static function eventTypeName(): string;
 
-    public static function occur(UuidInterface $id, array $payload): static
+    public static function occur(array $payload): static
     {
-        return new static($id, $payload);
+        return new static($payload);
     }
 }

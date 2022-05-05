@@ -15,7 +15,7 @@ final class ChangeBuildingName extends Handler
     public function __invoke(Command $command): AggregateRoot
     {
         assert($command instanceof ChangeBuildingNameCommand);
-        $aggregateRoot = $this->aggregateRepository->findBy(Building::class, [$command->id()]);
+        $aggregateRoot = $this->aggregateRepository->findBy($command->aggregateRootId()->toString());
         assert($aggregateRoot instanceof Building);
         $aggregateRoot->changeBuildingName($command->name());
         return $aggregateRoot;

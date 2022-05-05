@@ -8,6 +8,6 @@ use App\Domain\Aggregate\AggregateRoot;
 
 interface AggregateRepository
 {
-    public function findBy(string $aggregateClassName, array $identifiers): AggregateRoot;
+    public function findBy(string $aggregateRootId): AggregateRoot;
     public function addAggregateRoot(AggregateRoot $aggregateRoot): void;
 }

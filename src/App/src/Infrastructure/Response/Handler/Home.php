@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Response\Handler;
 
 use App\Domain\Aggregate\Building;
+use App\Domain\AggregateRepository;
 use App\Domain\Command\ChangeBuildingName;
 use App\Domain\Command\CreateAccount;
 use App\Domain\Command\CreateBuilding;
@@ -14,26 +15,47 @@ use Laminas\Diactoros\Response\TextResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 final class Home implements RequestHandlerInterface
 {
-    public function __construct(private readonly CommandBus $commandBus)
+    public function __construct(private readonly CommandBus $commandBus, private AggregateRepository $aggregateRepository)
     {
-        $response = $this->commandBus->dispatch(CreateBuilding::fromArray([
+        /*$response = $this->commandBus->dispatch(CreateBuilding::fromArray([
             'name' => 'Foobar Club'
         ]));
 
-        $result = $response->last(HandledStamp::class)->getResult();
-        assert($result instanceof Building);
-
-        $this->commandBus->dispatch(ChangeBuildingName::fromArray([
-            'id' => $result->id(),
-            'name' => 'OMG It\s working hotel'
+        $response = $this->commandBus->dispatch(ChangeBuildingName::fromArray([
+            'id' => Uuid::fromString('2c210263-2d26-4dcd-9a44-5385c4530c94'),
+            'name' => 'Best you can afford Motel'
         ]));
 
         $result = $response->last(HandledStamp::class)->getResult();
         assert($result instanceof Building);
+        $this->aggregateRepository->addAggregateRoot($result);
+
+        $response = $this->commandBus->dispatch(ChangeBuildingName::fromArray([
+            'id' => Uuid::fromString('2c210263-2d26-4dcd-9a44-5385c4530c94'),
+            'name' => 'Solo Club!'
+        ]));
+
+
+        $result = $response->last(HandledStamp::class)->getResult();
+        assert($result instanceof Building);
+
+        $this->aggregateRepository->addAggregateRoot($result);*/
+        $result = $this->aggregateRepository->findBy('2c210263-2d26-4dcd-9a44-5385c4530c94');
+
+        /*$response = $this->commandBus->dispatch(ChangeBuildingName::fromArray([
+            'id' => $result->id,
+            'name' => 'Are you shitting me?'
+        ]));
+
+        $result = $response->last(HandledStamp::class)->getResult();
+        assert($result instanceof Building);
+
+        $this->aggregateRepository->addAggregateRoot($result);*/
 
         var_dump($result);
 

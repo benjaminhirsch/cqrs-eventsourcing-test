@@ -15,7 +15,7 @@ final class CreateBuilding extends Handler
     public function __invoke(Command $command): AggregateRoot
     {
         assert($command instanceof CreateBuildingCommand);
-        $aggregateRoot = Building::create($command->name());
+        $aggregateRoot = Building::fromName($command->name());
         $this->aggregateRepository->addAggregateRoot($aggregateRoot);
 
         return $aggregateRoot;

@@ -57,7 +57,8 @@
         "mezzio/mezzio-laminasviewrenderer": "^2.2",
         "ramsey/uuid": "^4.3",
         "roave/better-reflection": "^5.4",
-        "symfony/messenger": "^6.0"
+        "symfony/messenger": "^6.0",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "laminas/laminas-development-mode": "^3.3.0",
