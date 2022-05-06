@@ -5,61 +5,72 @@ declare(strict_types=1);
 namespace App\Infrastructure\Response\Handler;
 
 use App\Domain\Aggregate\Building;
-use App\Domain\AggregateRepository;
 use App\Domain\Command\ChangeBuildingName;
-use App\Domain\Command\CreateAccount;
 use App\Domain\Command\CreateBuilding;
+use App\Domain\Command\UserCheckedIn;
+use App\Domain\Command\UserCheckedOut;
 use App\Domain\CommandBus;
-use App\Domain\Query\GetSumAccounts;
 use Laminas\Diactoros\Response\TextResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 final class Home implements RequestHandlerInterface
 {
-    public function __construct(private readonly CommandBus $commandBus, private AggregateRepository $aggregateRepository)
+    public function __construct(private readonly CommandBus $commandBus)
     {
-        /*$response = $this->commandBus->dispatch(CreateBuilding::fromArray([
+        $response = $this->commandBus->dispatch(CreateBuilding::fromArray([
             'name' => 'Foobar Club'
         ]));
 
-        $response = $this->commandBus->dispatch(ChangeBuildingName::fromArray([
-            'id' => Uuid::fromString('2c210263-2d26-4dcd-9a44-5385c4530c94'),
+        $result = $response->last(HandledStamp::class)->getResult();
+        assert($result instanceof Building);
+
+        $this->commandBus->dispatch(ChangeBuildingName::fromArray([
+            'id' => $result->id,
             'name' => 'Best you can afford Motel'
         ]));
 
-        $result = $response->last(HandledStamp::class)->getResult();
-        assert($result instanceof Building);
-        $this->aggregateRepository->addAggregateRoot($result);
-
-        $response = $this->commandBus->dispatch(ChangeBuildingName::fromArray([
-            'id' => Uuid::fromString('2c210263-2d26-4dcd-9a44-5385c4530c94'),
+        $this->commandBus->dispatch(ChangeBuildingName::fromArray([
+            'id' => $result->id,
             'name' => 'Solo Club!'
         ]));
 
-
-        $result = $response->last(HandledStamp::class)->getResult();
-        assert($result instanceof Building);
-
-        $this->aggregateRepository->addAggregateRoot($result);*/
-        $result = $this->aggregateRepository->findBy('2c210263-2d26-4dcd-9a44-5385c4530c94');
-
-        /*$response = $this->commandBus->dispatch(ChangeBuildingName::fromArray([
+        $this->commandBus->dispatch(ChangeBuildingName::fromArray([
             'id' => $result->id,
             'name' => 'Are you shitting me?'
         ]));
 
-        $result = $response->last(HandledStamp::class)->getResult();
-        assert($result instanceof Building);
+        $this->commandBus->dispatch(UserCheckedIn::toBuilding(
+            $result->id,
+            'Ben'
+        ));
 
-        $this->aggregateRepository->addAggregateRoot($result);*/
+        $this->commandBus->dispatch(UserCheckedIn::toBuilding(
+            $result->id,
+            'Fritz'
+        ));
 
-        var_dump($result);
+        $this->commandBus->dispatch(UserCheckedIn::toBuilding(
+            $result->id,
+            'Marco'
+        ));
 
-        die;
+        $this->commandBus->dispatch(UserCheckedOut::ofBuilding(
+            $result->id,
+            'Fritz'
+        ));
+
+        $this->commandBus->dispatch(UserCheckedIn::toBuilding(
+            $result->id,
+            'Ben'
+        ));
+
+//        $this->commandBus->dispatch(UserCheckedOut::ofBuilding(
+//            Uuid::fromString('9071d81f-19ac-46f6-a7b6-6be7753e8e00'),
+//            'Marco'
+//        ));
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

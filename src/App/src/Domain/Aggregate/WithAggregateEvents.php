@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Aggregate;
 
 use App\Domain\Event\Event;
+use Generator;
 use Ramsey\Uuid\UuidInterface;
 
 trait WithAggregateEvents
@@ -18,12 +19,14 @@ trait WithAggregateEvents
     }
 
     /**
-     * @param Event[] $events
+     * @param Generator<Event> $events
      */
-    public static function reconstituteFromEvents(UuidInterface $id, array $events): static
+    public static function reconstituteFromEvents(UuidInterface $id, Generator $events): static
     {
         $aggregate = new static($id);
-        array_map(static fn(Event $event) => $aggregate->apply($event), $events);
+        foreach ($events as $event) {
+            $aggregate->apply($event);
+        }
         return $aggregate;
     }
 
@@ -38,5 +41,13 @@ trait WithAggregateEvents
         return $recordedEvents;
     }
 
-    abstract protected function apply(Event $event): void;
+    protected function apply(Event $event): void
+    {
+        $parts = explode('\\', get_class($event));
+        $methodName = 'when' . end($parts);
+
+        if (method_exists($this, $methodName)) {
+            $this->{$methodName}($event);
+        }
+    }
 }

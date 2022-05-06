@@ -44,7 +44,7 @@ class ConfigProvider
     {
         return [
             'aliases' => [
-                AggregateRepository::class => Infrastructure\AggregateRepository::class
+                AggregateRepository::class => Infrastructure\BuildingRepository::class
             ],
             'invokables' => [],
             'factories' => array_merge($this->getGeneratedFactories(), [

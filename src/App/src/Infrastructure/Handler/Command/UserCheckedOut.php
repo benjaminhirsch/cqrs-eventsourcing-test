@@ -8,10 +8,10 @@ use App\Domain\Aggregate\AggregateRoot;
 use App\Domain\Aggregate\Building;
 use App\Domain\BuildingRepository;
 use App\Domain\Command\Command;
-use App\Domain\Command\CreateBuilding as CreateBuildingCommand;
+use App\Domain\Command\UserCheckedIn as UserCheckedInCommand;
 use App\Domain\Command\Handler;
 
-final class CreateBuilding implements Handler
+final class UserCheckedOut implements Handler
 {
     public function __construct(private readonly BuildingRepository $buildingRepository)
     {
@@ -19,9 +19,10 @@ final class CreateBuilding implements Handler
 
     public function __invoke(Command $command): AggregateRoot
     {
-        assert($command instanceof CreateBuildingCommand);
-        $aggregateRoot = Building::fromName($command->name());
-        $this->buildingRepository->store($aggregateRoot);
+        assert($command instanceof UserCheckedInCommand);
+        $aggregateRoot = $this->buildingRepository->findBy($command->aggregateRootId()->toString());
+        assert($aggregateRoot instanceof Building);
+        $aggregateRoot->checkOutUser($command->user());
 
         // Not sure if this is a good idea here
         $this->buildingRepository->store($aggregateRoot);

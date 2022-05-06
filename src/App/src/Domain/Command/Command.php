@@ -8,7 +8,7 @@ use Ramsey\Uuid\UuidInterface;
 
 abstract class Command
 {
-    private function __construct(protected readonly array $payload)
+    protected function __construct(protected readonly array $payload)
     {
     }
 
