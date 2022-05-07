@@ -17,5 +17,8 @@ return [
        'building.name_changed' => Event\BuildingNameChanged::class,
        'building.checkIn' => Event\UserCheckedIn::class,
        'building.checkOut' => Event\UserCheckedOut::class,
+       'building.doubleCheckInDetected' => Event\DoubleCheckInDetected::class,
+       'building.deleted' => Event\BuildingDeleted::class,
+       'building.deletionDenied' => Event\BuildingDeletionDenied::class,
    ],
 ];

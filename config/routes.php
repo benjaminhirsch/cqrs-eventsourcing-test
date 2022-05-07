@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Infrastructure\Response\Handler\Home;
 use Laminas\Diactoros\Response\TextResponse;
 use Mezzio\Application;
 use Mezzio\MiddlewareFactory;
@@ -39,5 +40,5 @@ use Psr\Container\ContainerInterface;
  */
 
 return static function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
-    $app->get('/', \App\Infrastructure\Response\Handler\Home::class, 'home');
+    $app->any('/', Home::class, 'home');
 };

@@ -43,4 +43,55 @@ final class BuildingRepository extends AggregateRootRepository implements Buildi
             echo $exception->getMessage();
         }
     }
+
+    public function getBuilding(string $aggregatRootId): ?\App\Domain\Model\Building
+    {
+        try {
+            $statement = $this->connection->prepare('SELECT id, name, "checkedIn" FROM buildings WHERE id = ?');
+            $statement->execute([
+                $aggregatRootId
+            ]);
+
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+            if ($result === false) {
+                return null;
+            }
+
+            return new \App\Domain\Model\Building(
+                Uuid::fromString($result['id']),
+                $result['name'],
+                json_decode($result['checkedIn'])
+            );
+
+        } catch ( PDOException $exception ) {
+            echo $exception->getMessage();
+            die;
+        }
+    }
+
+    /**
+     * @return \App\Domain\Model\Building[]
+     */
+    public function getAllBuilding(): array
+    {
+        try {
+            $statement = $this->connection->prepare('SELECT id, name, "checkedIn" FROM buildings');
+            $statement->execute();
+
+            $buildings = [];
+            foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $result) {
+                $buildings[] = new \App\Domain\Model\Building(
+                    Uuid::fromString($result['id']),
+                    $result['name'],
+                    json_decode($result['checkedIn'] ?? '[]')
+                );
+            }
+            return $buildings;
+
+        } catch ( PDOException $exception ) {
+            echo $exception->getMessage();
+            die;
+        }
+    }
 }

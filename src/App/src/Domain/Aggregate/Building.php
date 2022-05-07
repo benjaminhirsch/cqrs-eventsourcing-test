@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Aggregate;
 
 use App\Domain\Event\BuildingCreated;
+use App\Domain\Event\BuildingDeleted;
+use App\Domain\Event\BuildingDeletionDenied;
 use App\Domain\Event\BuildingNameChanged;
 use App\Domain\Event\DoubleCheckInDetected;
 use App\Domain\Event\UserCheckedIn;
@@ -51,6 +53,18 @@ final class Building extends AggregateRoot
         $this->recordThat(UserCheckedOut::ofBuilding($userName));
     }
 
+    public function deleteBuilding(): void
+    {
+        $this->recordThat(BuildingDeleted::occur([]));
+
+        if (count($this->checkedInUsers)) {
+            $this->recordThat(BuildingDeletionDenied::occur([
+                'name' => $this->name,
+                'checkedIn' => array_keys($this->checkedInUsers)
+            ]));
+        }
+    }
+
     public function changeBuildingName(string $name): void
     {
         if ($this->name === $name) {
@@ -60,6 +74,11 @@ final class Building extends AggregateRoot
         $this->recordThat(BuildingNameChanged::occur([
             'name' => $name
         ]));
+    }
+
+    protected function whenBuildingDeleted(): void
+    {
+        // Do nothing on purpose
     }
 
     protected function whenUserCheckedIn(UserCheckedIn $event): void

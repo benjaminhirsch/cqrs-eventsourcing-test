@@ -15,10 +15,16 @@ return [
         Command\ChangeBuildingName::class => [Handler\Command\ChangeBuildingName::class],
         Command\UserCheckedIn::class => [Handler\Command\UserCheckedIn::class],
         Command\UserCheckedOut::class => [Handler\Command\UserCheckedOut::class],
+        Command\DeleteBuilding::class => [Handler\Command\DeleteBuilding::class],
     ],
     QueryBus::class => [],
     EventBus::class => [
         Event\BuildingCreated::class => [Handler\Event\BuildingCreated::class],
         Event\BuildingNameChanged::class => [Handler\Event\BuildNameChanged::class],
+        Event\UserCheckedIn::class => [Handler\Event\DoNothing::class],
+        Event\BuildingDeletionDenied::class => [Handler\Event\DoNothing::class],
+        Event\UserCheckedOut::class => [Handler\Event\DoNothing::class],
+        Event\BuildingDeleted::class => [Handler\Event\DoNothing::class],
+        Event\DoubleCheckInDetected::class => [Handler\Event\DoubleCheckInDetected::class],
     ],
 ];

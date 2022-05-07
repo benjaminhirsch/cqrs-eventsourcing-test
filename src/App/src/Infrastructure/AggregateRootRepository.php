@@ -7,13 +7,14 @@ namespace App\Infrastructure;
 use App\Domain\Aggregate\AggregateRoot;
 use App\Domain\Aggregate\Building;
 use App\Domain\Service\EventTypeMapping;
+use App\Domain\EventBus;
 use PDO;
 use PDOException;
 use Ramsey\Uuid\Uuid;
 
 abstract class AggregateRootRepository
 {
-    public function __construct(protected PDO $connection, protected EventTypeMapping $eventTypeMapping)
+    public function __construct(protected PDO $connection, protected EventTypeMapping $eventTypeMapping, protected EventBus $eventBus)
     {
     }
 
@@ -27,18 +28,22 @@ abstract class AggregateRootRepository
     {
         try {
             $this->connection->beginTransaction();
-            foreach ($aggregateRoot->getRecordedEvents() as $event) {
+            foreach ($aggregateRoot->getAndReleaseRecordedEvents() as $event) {
                 $statement = $this->connection->prepare('INSERT INTO events (type, uuid, body) VALUES (?, ?, ?)');
                 $statement->execute([
                     $event::eventTypeName(),
                     $aggregateRoot->id,
                     json_encode($event)
                 ]);
+
+                $this->eventBus->dispatch($event);
             }
             $this->connection->commit();
+
         } catch (PDOException $exception) {
             $this->connection->rollBack();
             echo $exception->getMessage();
+            die;
         }
     }
 }

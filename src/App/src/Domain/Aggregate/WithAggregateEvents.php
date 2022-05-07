@@ -33,7 +33,7 @@ trait WithAggregateEvents
     /**
      * @return Event[]
      */
-    public function getRecordedEvents(): array
+    public function getAndReleaseRecordedEvents(): array
     {
         $recordedEvents = $this->recordedEvents;
         $this->recordedEvents = [];
